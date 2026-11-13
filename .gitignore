@@ -1,0 +1,44 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Environment variables and secrets
+.env
+.env.*
+
+# Database
+*.db
+*.db-journal
+
+# Runtime files
+*.log
+
+# Backup files
+*.tar.gz
+*.before-docker
+
+# Git
+.git/
+
+# Test cache
+.pytest_cache/
+
+# Local test packages
+failure-test.txt
+recovery-test.txt
+recovery-test-actual.txt
+sample-release.txt
+
+# Application backups
+*.backup
+*.backup*
+*.before-*
+
+# Release storage
+app/storage/releases/
+
+# Edge node downloaded packages
+edge-node-01/packages/
+*.backup
+*-backup

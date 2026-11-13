@@ -1,0 +1,40 @@
+services:
+  backend:
+    image: edgerelay-backend:v2
+    container_name: edgerelay-backend
+    environment:
+      EDGERELAY_DB_PATH: /data/edgerelay.db
+      EDGERELAY_STORAGE_DIR: /releases
+    volumes:
+      - edgerelay-db:/data
+      - edgerelay-releases:/releases
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  nginx:
+    image: nginx:alpine
+    container_name: edgerelay-nginx
+    ports:
+      - "8081:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  edgerelay-db:
+    external: true
+  edgerelay-releases:
+    external: true
