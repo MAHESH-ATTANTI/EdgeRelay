@@ -2,9 +2,12 @@ name: EdgeRelay CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -24,9 +27,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Run Python syntax check
+      - name: Check Python syntax
         run: |
           python -m compileall -q app edge-node-01
+
+      - name: Verify project files
+        run: |
+          test -f Dockerfile
+          test -f compose.yaml
+          test -f nginx/default.conf
 
       - name: Run automated tests
         run: |
