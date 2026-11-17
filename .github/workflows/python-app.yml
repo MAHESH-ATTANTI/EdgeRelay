@@ -68,6 +68,7 @@ jobs:
             maheshattanti1/edgerelay-backend:latest
             maheshattanti1/edgerelay-backend:${{ github.sha }}
 
+
   deploy:
     name: Deploy to AWS EC2
     needs: build-and-push
@@ -78,6 +79,17 @@ jobs:
       contents: read
 
     steps:
+      - name: Verify GitHub OIDC claims
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const token = await core.getIDToken('sts.amazonaws.com');
+            const payload = JSON.parse(
+              Buffer.from(token.split('.')[1], 'base64url').toString()
+            );
+            core.info(`OIDC subject: ${payload.sub}`);
+            core.info(`OIDC audience: ${payload.aud}`);
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
