@@ -42,3 +42,11 @@ app/storage/releases/
 edge-node-01/packages/
 *.backup
 *-backup
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+crash.log
+crash.*.log
