@@ -137,3 +137,40 @@ The provider lock file `.terraform.lock.hcl` is tracked in Git.
 - Review every Terraform plan before applying changes.
 - Never commit AWS credentials or Terraform state files.
 - Keep a secure backup of Terraform state.
+
+## State Backup and Recovery
+
+Terraform state files are backed up outside the Git repository.
+
+Backup location:
+
+`~/edgerelay-backups/terraform/terraform.tfstate.backup`
+
+### Backup Verification
+
+SHA-256 checksum is used to verify backup integrity.
+```bash
+sha256sum terraform.tfstate ~/edgerelay-backups/terraform/terraform.tfstate.backup
+```
+
+
+### Recovery Procedure
+
+Before restoring a backup, preserve the current state file.
+
+Verify the backup checksum before recovery.
+
+Restore the backup only when the current state is lost or corrupted.
+
+```bash
+cp ~/edgerelay-backups/terraform/terraform.tfstate.backup terraform.tfstate
+```
+
+After recovery, verify Terraform resources:
+
+```bash
+terraform state list
+terraform plan
+```
+
+Never commit Terraform state files or expose them publicly.
