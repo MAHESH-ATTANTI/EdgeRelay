@@ -1,0 +1,6 @@
+---
+app_name: EdgeRelay
+app_environment: AWS
+app_port: 8000
+app_directory: /opt/edgerelay
+app_owner: ubuntu

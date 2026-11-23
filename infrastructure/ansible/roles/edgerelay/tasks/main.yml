@@ -1,0 +1,62 @@
+---
+- name: Display server operating system
+  debug:
+    msg: "Server OS is Ubuntu"
+
+- name: Update APT package cache
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install required packages
+  apt:
+    name:
+      - git
+      - curl
+      - unzip
+    state: present
+
+- name: Create EdgeRelay application directory
+  file:
+    path: "{{ app_directory }}"
+    state: directory
+    owner: "{{ app_owner }}"
+    group: "{{ app_owner }}"
+    mode: '0755'
+
+- name: Create EdgeRelay deployment information file
+  copy:
+    dest: "{{ app_directory }}/deployment-info.txt"
+    content: |
+      Application: EdgeRelay
+      Environment: AWS EC2
+      Operating System: Ubuntu 24.04
+      Managed By: Ansible
+    owner: "{{ app_owner }}"
+    group: "{{ app_owner }}"
+    mode: '0644'
+
+- name: Generate EdgeRelay deployment configuration
+  template:
+    src: deployment.conf.j2
+    dest: "{{ app_directory }}/deployment.conf"
+    owner: "{{ app_owner }}"
+    group: "{{ app_owner }}"
+    mode: '0644'
+  notify: Display configuration update message
+
+- name: Validate EdgeRelay Docker Compose configuration
+  command: docker compose -f /home/ubuntu/EdgeRelay/compose.aws.yaml config --quiet
+  changed_when: false
+
+- name: Check EdgeRelay backend container health
+  command: docker inspect --format "{{ '{{' }}.State.Health.Status{{ '}}' }}" edgerelay-backend
+  register: backend_health
+  changed_when: false
+  failed_when: backend_health.stdout != "healthy"
+
+- name: Check EdgeRelay Nginx container health
+  command: docker inspect --format "{{ '{{' }}.State.Health.Status{{ '}}' }}" edgerelay-nginx
+  register: nginx_health
+  changed_when: false
+  failed_when: nginx_health.stdout != "healthy"

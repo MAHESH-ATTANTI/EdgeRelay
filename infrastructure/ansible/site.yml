@@ -1,0 +1,7 @@
+---
+- name: EdgeRelay Server Configuration
+  hosts: edgerelay
+  become: true
+
+  roles:
+    - edgerelay

@@ -1,0 +1,4 @@
+---
+- name: Display configuration update message
+  debug:
+    msg: "EdgeRelay configuration has been updated!"
